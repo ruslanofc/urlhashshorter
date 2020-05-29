@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <p class="py-2 px-3 m-0 title">Все ссылки</p>
+    <div class="row mt-1 mx-1 p-3">
+        <div class="col-12">
+            <table id="links">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Код</th>
+                    <th>Просмотры</th>
+                    <th>Удалить</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for url in urls %}
+                <tr>
+                    <td>{{ forloop.revcounter }}</td>
+                    <td>
+                        <a href="{{ url.get_absolute_url }}">{{ url.short_slug|truncatechars:80 }}</a><br/>
+                        <small>{{ url.source_url|truncatechars:80 }}</small>
+                    </td>
+                    <td>{{ url.views }}</td>
+                    <td><a href="{% url 'core:remove_url' url.pk %}" class="btn btn-danger">удалить</a></td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+    <!-- Optional JavaScript -->
+    <script type="text/javascript">
+        var app = new Vue({
+          delimiters: ['[[', ']]'],
+          el: '#app',
+          data: {
+            new_url: '',
+            urls: [{% for u in urls %}'{{ u.source_url }}'{% if forloop.revcounter != 1%}, {% endif %}{% endfor %}]
+          }
+        })
+        $(document).ready(function() {
+            $('#links').DataTable( {
+                "order": [[ 2, "desc" ]]
+            } );
+        } );
+    </script>
+
+{% endblock %}
